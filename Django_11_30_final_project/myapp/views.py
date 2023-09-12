@@ -246,9 +246,13 @@ def confirm_booking(request,pk):
 
 @csrf_exempt
 def create_checkout_session(request):
-	amount = int(json.load(request)['post_data'])
+	data = json.load(request)
+	amount=int(data['amount'])
 	final_amount=amount*100
-	
+	bid=int(data['bid'])
+	book_artist=Book_Artist.objects.get(pk=bid)
+	book_artist.payment_status=True
+	book_artist.save()
 	session = stripe.checkout.Session.create(
 		payment_method_types=['card'],
 		line_items=[{

@@ -70,11 +70,14 @@
                                         {% endif %}
                                     </span>
                                     <span>Payment Status : 
-                                        {% if i.artist_confirmation == False %}
-                                            Waiting For Artist Confirmation
-                                        {% else %}
+                                        {% if i.payment_status == True %}
                                             <form method="post">
-                                                <input type="hidden" id="artist_ffes" name="amount" value="{{i.artist_fees}}">
+                                                
+                                                <button type="button" class="btn btn-lg btn-primary" id="checkout-button" disabled>Paid</button>
+                                            </form>
+                                        {% elif i.artist_confirmation == True  and i.payment_status == False %}
+                                            <form method="post">
+                                                <input type="hidden" id="bid" value="{{i.pk}}">
                                                 <button type="button" class="btn btn-lg btn-primary" id="checkout-button">Make Payment</button>
                                             </form>
                                         {% endif %}
@@ -97,14 +100,16 @@
     var stripe = Stripe('pk_test_51MshH6SJuXwPfjjrrgxJ5tubbOgYAhRrqNcd4RDUSq1peWpIMZrjhIiTncSUWO9u6byeDf4KxdZPkFD4hU55mVOg00aRL5RT8x');
     var checkoutButton = document.getElementById('checkout-button');
 
-    checkoutButton.addEventListener('click', function() { 
+    checkoutButton.addEventListener('click', function() {
+        var bid = document.getElementById('bid').value;
+        var obj={"amount":"1000","bid":bid}
         fetch('/create-checkout-session/', {
         method: 'POST',
         headers:{
             'Accept': 'application/json',
             'X-Requested-With': 'XMLHttpRequest',
         },
-        body: JSON.stringify({'post_data':'1000'})
+        body: JSON.stringify(obj)
     })
  .then(function(response) {
  return response.json();
